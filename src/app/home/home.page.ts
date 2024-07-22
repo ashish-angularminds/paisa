@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
+import { selectUserToken } from '../store/reducers'
+import { Store } from '@ngrx/store';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
 
-  constructor() {}
+  token$: any;
 
+  constructor(private store: Store) { }
+
+  ngOnInit() {
+    this.token$ = this.store.select(selectUserToken);
+  }
 }

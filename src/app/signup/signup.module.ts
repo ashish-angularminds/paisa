@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { SignupPageRoutingModule } from './signup-routing.module';
 
 import { SignupPage } from './signup.page';
+import { StoreModule } from '@ngrx/store';
 
 @NgModule({
   imports: [
@@ -14,7 +15,7 @@ import { SignupPage } from './signup.page';
     FormsModule,
     IonicModule,
     SignupPageRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   declarations: [SignupPage]
 })

@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
+import { StoreModule } from '@ngrx/store';
+import { authReducer, authFeatureKey } from '../store/reducers';
 
 
 @NgModule({
@@ -16,4 +18,4 @@ import { HomePageRoutingModule } from './home-routing.module';
   ],
   declarations: [HomePage]
 })
-export class HomePageModule {}
+export class HomePageModule { }

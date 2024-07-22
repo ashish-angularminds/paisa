@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-
+import { updateProfile } from '@angular/fire/auth'
 @Injectable({
   providedIn: 'root'
 })
@@ -12,8 +12,12 @@ export class AuthService {
     return await this.ngFireAuth.createUserWithEmailAndPassword(email, password);
   }
 
-  async loginUser(email: string, password: string) {
+  async loginUserWithEamil(email: string, password: string) {
     return await this.ngFireAuth.signInWithEmailAndPassword(email, password);
+  }
+
+  async loginUserWithPhone(phone: string, applicationVerifier: any) {
+    return await this.ngFireAuth.signInWithPhoneNumber(phone, applicationVerifier);
   }
 
   async resetPassword(email: string) {

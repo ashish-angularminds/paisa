@@ -9,7 +9,9 @@ export class LandingPage implements OnInit {
 
   constructor() { }
 
+  loginStatus: boolean = false;
   ngOnInit() {
+
   }
 
 }
