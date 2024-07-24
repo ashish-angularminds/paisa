@@ -12,6 +12,9 @@
   </ion-header>
 
   <div id="container">
-    <strong>Ready {{ token$| async }}</strong>
+    <ion-button (click)="add()">add</ion-button>
+    <ion-button (click)="delete()">delete</ion-button>
+    <ion-button (click)="update()">update</ion-button>
+    <strong>Ready {{ user| async | json }}</strong>
   </div>
 </ion-content>

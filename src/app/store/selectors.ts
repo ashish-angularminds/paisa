@@ -1,9 +1,9 @@
 import { createSelector } from "@ngrx/store";
-import { initalStateInterface } from "./type/InitialState.interface";
+import { initalUserStateInterface } from "./type/InitialUserState.interface";
 
-export const selectFeature = (state: { auth: initalStateInterface }) => state.auth
+// export const selectFeature = (state: { user: initalUserStateInterface }) => state.user
 
-export const selectUserToken = createSelector(
-  selectFeature,
-  (state) => state.userToken
-)
+// export const selectstate = createSelector(
+//   selectFeature,
+//   (state) => state
+// )

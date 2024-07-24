@@ -5,7 +5,9 @@ import { AuthService } from '../services/auth.service';
 import { FirebaseError } from 'firebase/app';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { authActions } from '../store/action';
+import { userActions } from '../store/action';
+import { FirestoreService } from '../services/firestore.service';
+import { initalUserStateInterface } from '../store/type/InitialUserState.interface';
 
 @Component({
   selector: 'app-signup',
@@ -15,7 +17,9 @@ import { authActions } from '../store/action';
 export class SignupPage implements OnInit {
   user: any;
   signupForm!: FormGroup<any>;
-  constructor(private formBuilder: FormBuilder, private loadingCrtl: LoadingController, private authServices: AuthService, private toastController: ToastController, private router: Router, private store: Store) { }
+  constructor(private formBuilder: FormBuilder, private loadingCrtl: LoadingController,
+    private authServices: AuthService, private toastController: ToastController, private router: Router, private store: Store<{ user: initalUserStateInterface }>,
+    private firestoreService: FirestoreService) { }
 
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
@@ -41,9 +45,17 @@ export class SignupPage implements OnInit {
       await this.authServices.registerUser(this.signupForm.controls['email'].value, this.signupForm.controls['password'].value).then(
         async (data) => {
           data.user?.updateProfile({ displayName: this.signupForm.controls['fullname'].value });
-          this.user = data.user;
-          this.store.dispatch(authActions.setToken({ token: this.user.multiFactor.user.accessToken }));
-          console.log(this.user);
+          this.store.dispatch(userActions.createUser({ userData: { accounts: [], lastSMSUpdate: new Date(), Uid: data.user!.uid } }));
+          this.store.dispatch(userActions.createAccount({
+            account:
+              { month: (new Date().getMonth()) + 1, year: new Date().getFullYear(), savings: 0, totalCredit: 0, totalSpent: 0, transactions: [] }
+          }));
+          let userData!: initalUserStateInterface;
+          this.store.select('user').subscribe((data) => userData = data);
+          this.firestoreService.addDoc(userData, data.user!.uid);
+          this.store.select('user').subscribe((data) => {
+            localStorage.setItem('userState', JSON.stringify(data));
+          });
           (await loader).dismiss();
           this.presentToast('Registration successful');
           this.router.navigate(['/home']);

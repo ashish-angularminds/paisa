@@ -1,4 +1,4 @@
-import { NgModule, isDevMode } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -11,19 +11,21 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth'
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from 'src/environments/environment';
 import { ReactiveFormsModule } from '@angular/forms';
-import { authReducer, authFeatureKey } from './store/reducers';
+import { userReducer } from './store/reducers';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore'
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getDatabase, provideDatabase } from '@angular/fire/database';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, IonicModule.forRoot({ animated: false }), AppRoutingModule, ReactiveFormsModule,
-    StoreModule.forRoot({ store: authReducer }),
+    StoreModule.forRoot({ user: userReducer }),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
-      logOnly: false,
+      logOnly: true,
       autoPause: true,
       features: {
-        pause: false,
+        pause: true,
         lock: true,
         persist: true
       }
@@ -31,8 +33,9 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore'
     AngularFireModule,
     AngularFireAuthModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFirestoreModule
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideFirebaseApp(() => initializeApp({ "projectId": "paisa-9677c", "appId": "1:689908999858:web:e0f9b48f94d009b4aecbab", "storageBucket": "paisa-9677c.appspot.com", "apiKey": "AIzaSyBWk_LHDWDS5NzOIFZ2dg659TnsGvPR_z4", "authDomain": "paisa-9677c.firebaseapp.com", "messagingSenderId": "689908999858", "measurementId": "G-HYS64L1TDE" })), provideFirestore(() => getFirestore()), provideDatabase(() => getDatabase()),
   ],
   bootstrap: [AppComponent],
 })

@@ -4,8 +4,10 @@ import { LoadingController, ToastController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { Store } from '@ngrx/store';
 import { FirebaseError } from 'firebase/app';
-import { ActivatedRoute, Router, RouterEvent, RouterLink, RouterModule } from '@angular/router';
-import { authActions } from '../store/action';
+import { Router } from '@angular/router';
+import { userActions } from '../store/action';
+import { initalUserStateInterface } from '../store/type/InitialUserState.interface';
+import { FirestoreService } from '../services/firestore.service';
 
 @Component({
   selector: 'app-signin',
@@ -14,9 +16,10 @@ import { authActions } from '../store/action';
 })
 export class SigninPage implements OnInit {
 
-  user: any;
   signinForm!: FormGroup;
-  constructor(private formBuilder: FormBuilder, private loadingCrtl: LoadingController, private authServices: AuthService, private store: Store, private toastController: ToastController, private router: Router) { }
+  constructor(private formBuilder: FormBuilder, private loadingCrtl: LoadingController, private authServices: AuthService,
+    private store: Store<{ user: initalUserStateInterface }>, private toastController: ToastController, private router: Router,
+    private fireStoreService: FirestoreService) { }
 
   ngOnInit() {
     this.signinForm = this.formBuilder.group({
@@ -40,10 +43,12 @@ export class SigninPage implements OnInit {
     if (this.signinForm.valid) {
       await this.authServices.loginUserWithEamil(this.signinForm.controls['email'].value, this.signinForm.controls['password'].value).then(
         async (data) => {
-          this.user = data.user;
-          this.store.dispatch(authActions.setToken({ token: this.user.multiFactor.user.accessToken }));
+          let user: any = (await this.fireStoreService.getDoc(data.user!.uid)).data();
+          this.store.dispatch(userActions.createUser({ userData: user }));
+          this.store.select('user').subscribe((data) => {
+            localStorage.setItem('userState', JSON.stringify(data));
+          })
           this.presentToast('Login Successful');
-          console.log(this.user);
           (await loader).dismiss();
           this.router.navigate(['/home']);
         },

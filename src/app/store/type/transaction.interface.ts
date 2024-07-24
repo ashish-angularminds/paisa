@@ -1,14 +1,14 @@
 
-enum transactionType {
+export enum transactionType {
   Credit,
   Debit
 }
-enum transactionMode {
+export enum transactionMode {
   Cash,
   UPI,
   Card
 }
-enum transactionCategory {
+export enum transactionCategory {
   Food,
   Shopping,
   Travel,
@@ -16,11 +16,11 @@ enum transactionCategory {
   Other
 }
 export interface transaction {
-  id: string,
-  amount: number,
-  type: transactionType,
-  mode: transactionMode,
-  category: transactionCategory,
-  createdAt: Date,
-  updatedAt: Date
+  id?: string,
+  amount?: number,
+  type?: transactionType,
+  mode?: transactionMode,
+  category?: transactionCategory,
+  createdAt?: Date,
+  updatedAt?: Date
 }
