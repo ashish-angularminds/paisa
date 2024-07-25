@@ -18,7 +18,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, IonicModule.forRoot({ animated: false }), AppRoutingModule, ReactiveFormsModule,
+  imports: [BrowserModule, IonicModule.forRoot({ animated: true }), AppRoutingModule, ReactiveFormsModule,
     StoreModule.forRoot({ user: userReducer }),
     StoreDevtoolsModule.instrument({
       maxAge: 25,

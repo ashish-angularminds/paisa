@@ -4,7 +4,7 @@ import { userActions } from "./action";
 import { accounts } from "./type/account.interface";
 import { transaction, transactionType } from "./type/transaction.interface";
 
-let lS: initalUserStateInterface = JSON.parse(localStorage.getItem('userState') || "{}");
+let lS: initalUserStateInterface = JSON.parse(localStorage.getItem('user') || "{}");
 
 const initaluserstate: initalUserStateInterface = {
   accounts: lS.accounts || [],

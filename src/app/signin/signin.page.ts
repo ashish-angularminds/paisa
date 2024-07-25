@@ -46,7 +46,7 @@ export class SigninPage implements OnInit {
           let user: any = (await this.fireStoreService.getDoc(data.user!.uid)).data();
           this.store.dispatch(userActions.createUser({ userData: user }));
           this.store.select('user').subscribe((data) => {
-            localStorage.setItem('userState', JSON.stringify(data));
+            localStorage.setItem('user', JSON.stringify(data));
           })
           this.presentToast('Login Successful');
           (await loader).dismiss();

@@ -14,7 +14,7 @@ export class AppComponent {
   // @HostListener('window:beforeunload', ['$event'])
   // beforeunloadHandler(event: Event): void {
   //   // this.store.select('user').subscribe((data) => {
-  //   //   localStorage.setItem('userState', JSON.stringify(data));
+  //   //   localStorage.setItem('user', JSON.stringify(data));
   //   //   // this.firestoreService.updateDoc()
   //   // });
   //   localStorage.setItem('userState', "working");
