@@ -2,7 +2,7 @@ import { createFeature, createReducer, on } from "@ngrx/store";
 import { initalUserStateInterface } from "./type/InitialUserState.interface";
 import { userActions } from "./action";
 import { accounts } from "./type/account.interface";
-import { transaction, transactionType } from "./type/transaction.interface";
+import { transactionInterface, transactionType } from "./type/transaction.interface";
 
 let lS: initalUserStateInterface = JSON.parse(localStorage.getItem('user') || "{}");
 
@@ -12,7 +12,7 @@ const initaluserstate: initalUserStateInterface = {
   Uid: lS.Uid || undefined
 }
 
-function addTransaction(_account: accounts, transaction: transaction): accounts {
+function addTransaction(_account: accounts, transaction: transactionInterface): accounts {
   let account = { ..._account };
   if (transaction.type === transactionType.Credit) {
     account.totalCredit = account.totalCredit! + transaction.amount!;
@@ -22,11 +22,10 @@ function addTransaction(_account: accounts, transaction: transaction): accounts 
   return { ...account, transactions: [...account.transactions!, transaction] }
 }
 
-function updateTransaction(_account: accounts, transactionId: string, updatedtransaction: transaction): accounts {
+function updateTransaction(_account: accounts, transactionId: string, updatedtransaction: transactionInterface): accounts {
   let account = { ..._account };
   account.transactions = account.transactions?.map((trans) => {
     if (trans.id === transactionId) {
-      console.log('check:', trans, updatedtransaction);
       if (trans.type === updatedtransaction.type) {
         if (trans.type === transactionType.Credit) {
           account.totalCredit = (account.totalCredit! - trans.amount!) + updatedtransaction.amount!;
@@ -34,7 +33,6 @@ function updateTransaction(_account: accounts, transactionId: string, updatedtra
           account.totalSpent = (account.totalSpent! - trans.amount!) + updatedtransaction.amount!;
         }
       } else {
-        console.log('workingggg')
         if (trans.type === transactionType.Credit) {
           account.totalCredit = account.totalCredit! - trans.amount!;
           account.totalSpent = account.totalSpent! + (updatedtransaction.amount!) ? (updatedtransaction.amount!) : trans.amount!;
@@ -43,7 +41,6 @@ function updateTransaction(_account: accounts, transactionId: string, updatedtra
           account.totalCredit = account.totalCredit! + (updatedtransaction.amount!) ? (updatedtransaction.amount!) : trans.amount!;
         }
       }
-      console.log({ ...trans, ...updatedtransaction });
       return { ...trans, ...updatedtransaction }
     } else {
       return trans;
@@ -64,7 +61,7 @@ function deleteTransaction(_account: accounts, transactionId: string): accounts 
   return { ...account, transactions: newtransactions }
 }
 
-function curdTransaction(crud: any, accounts: accounts[], month: number, year: number, transactionId?: string, transaction?: transaction): accounts[] {
+function curdTransaction(crud: any, accounts: accounts[], month: number, year: number, transactionId?: string, transaction?: transactionInterface): accounts[] {
   return accounts.map((data: accounts) => {
     if (data.month === month && data.year === year) {
       if (crud === 'add') {

@@ -15,12 +15,12 @@ export enum transactionCategory {
   Medical,
   Other
 }
-export interface transaction {
+export interface transactionInterface {
   id?: string,
   amount?: number,
   type?: transactionType,
   mode?: transactionMode,
   category?: transactionCategory,
-  createdAt?: Date,
-  updatedAt?: Date
+  createdAt?: { seconds: number },
+  updatedAt?: { seconds: number },
 }

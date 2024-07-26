@@ -26,16 +26,16 @@
         >
       </ion-buttons>
       <ion-buttons slot="end">
-        <ion-button id="open-action-sheet" shape="round" color="dark">
-          <ion-icon size="large" name="refresh"></ion-icon>
+        <ion-button (click)="setOpen(true)" shape="round" color="dark">
+          <ion-icon size="large" name="add-outline"></ion-icon>
         </ion-button>
         <ion-action-sheet
           trigger="open-action-sheet"
           header="Are you sure?"
           [buttons]=""
         ></ion-action-sheet>
-        <ion-button (click)="setOpen(true)" shape="round" color="dark">
-          <ion-icon size="large" name="add-outline"></ion-icon>
+        <ion-button id="open-action-sheet" shape="round" color="dark">
+          <ion-icon size="large" name="person-circle"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -46,22 +46,24 @@
       <ion-row
         class="ion-text-center ion-padding-top ion-justify-content-around ion-align-items-center"
       >
-        <ion-col size="4" class="ion-padding sm-card">
+        <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Total Credit</h5>
             <h5 class="ion-no-margin amount-text">{{account.totalCredit}}</h5>
           </ion-text>
         </ion-col>
-        <ion-col size="4" class="ion-padding sm-card">
+        <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Total Spend</h5>
             <h5 class="ion-no-margin amount-text">{{account.totalSpent}}</h5>
           </ion-text>
         </ion-col>
-        <ion-col size="2.5" class="ion-padding sm-card">
+        <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Quota</h5>
-            <h5 class="ion-no-margin amount-text"></h5>
+            <h5 class="ion-no-margin amount-text">
+              {{calculateQuota(account.totalCredit!)}}
+            </h5>
           </ion-text>
         </ion-col>
       </ion-row>
@@ -72,13 +74,13 @@
         <ion-col size="5.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Food</h5>
-            <h5 class="ion-no-margin amount-text"></h5>
+            <h5 class="ion-no-margin amount-text">{{foodAmount}}</h5>
           </ion-text>
         </ion-col>
         <ion-col size="5.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Shopping</h5>
-            <h5 class="ion-no-margin amount-text"></h5>
+            <h5 class="ion-no-margin amount-text">{{shoppingAmount}}</h5>
           </ion-text>
         </ion-col>
       </ion-row>
@@ -88,69 +90,64 @@
         <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Medical</h5>
-            <h5 class="ion-no-margin amount-text"></h5>
+            <h5 class="ion-no-margin amount-text">{{medicalAmount}}</h5>
           </ion-text>
         </ion-col>
         <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Travel</h5>
-            <h5 class="ion-no-margin amount-text"></h5>
+            <h5 class="ion-no-margin amount-text">{{travelAmount}}</h5>
           </ion-text>
         </ion-col>
         <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Other</h5>
-            <h5 class="ion-no-margin amount-text"></h5>
+            <h5 class="ion-no-margin amount-text">{{otherAmount}}</h5>
           </ion-text>
         </ion-col>
       </ion-row>
     </ion-grid>
 
-    <ion-grid>
+    <ion-grid class="ion-padding">
       <ion-row>
         <ion-col>
-          <ion-list [inset]="false" class="transaction-list">
+          <ion-list [inset]="false" lines="full" class="transaction-list">
             <ion-item-sliding
-              *ngFor="let transactionLog of account.transactions"
+              *ngFor="let transactionLog of reverseList(account.transactions!)"
             >
               <ion-item [button]="true">
                 <ion-icon
                   slot="start"
                   size="large"
                   [name]="transactionLog?.type===0?'add-circle':'remove-circle'"
-                  [color]="transactionLog?.type===1?'success':'danger'"
+                  [color]="transactionLog?.type===0?'success':'danger'"
                 ></ion-icon>
                 <ion-label
-                  [color]="transactionLog?.type===1?'success':'danger'"
+                  [color]="transactionLog?.type===0?'success':'danger'"
                 >
                   <h2>{{transactionLog?.amount}}</h2>
-                  <small>{{transactionLog?.createdAt|json}}</small>
+                  <small>{{dateConverter(transactionLog?.createdAt)}}</small>
                 </ion-label>
 
                 <ion-label slot="end" style="display: contents">
                   <ion-label
-                    [id]="'hover-'+transactionLog?.id"
                     slot="start"
                     style="
                       overflow: hidden;
                       text-overflow: ellipsis !important;
                       white-space: nowrap;
                       max-width: 35%;
-                      text-align: center;
+                      text-align: end;
                     "
                   >
-                    {{transactionLog?.category }}
+                    <h2>
+                      {{getTransactionCategory(transactionLog?.category)}}
+                    </h2>
+                    <small
+                      >{{getTransactionType(transactionLog?.type)}} / {{
+                      getTransactionMode(transactionLog?.mode)}}</small
+                    >
                   </ion-label>
-                  <ion-popover
-                    [trigger]="'hover-'+transactionLog?.id"
-                    triggerAction="hover"
-                  >
-                    <ng-template>
-                      <ion-content class="ion-padding"
-                        >{{transactionLog?.category }}</ion-content
-                      >
-                    </ng-template>
-                  </ion-popover>
 
                   <ion-label
                     style="max-width: 25%"
@@ -163,7 +160,18 @@
               </ion-item>
 
               <ion-item-options slot="end">
-                <ion-item-option color="danger" expandable="true">
+                <ion-item-option
+                  color="primary"
+                  expandable="true"
+                  (click)="setOpen(true,transactionLog)"
+                >
+                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                </ion-item-option>
+                <ion-item-option
+                  color="danger"
+                  expandable="true"
+                  (click)="deleteTransaction(transactionLog.id!, transactionLog.createdAt?.seconds!)"
+                >
                   <ion-icon slot="icon-only" name="trash"></ion-icon>
                 </ion-item-option>
               </ion-item-options>
@@ -249,7 +257,7 @@
           <ion-item>
             <ion-datetime
               hourCycle="h12"
-              [(ngModel)]="transaction.createdAt"
+              [(ngModel)]="formCreatedAt"
             ></ion-datetime>
           </ion-item>
         </ion-list>

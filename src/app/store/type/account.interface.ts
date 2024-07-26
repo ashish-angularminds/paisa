@@ -1,7 +1,7 @@
-import { transaction } from "./transaction.interface";
+import { transactionInterface } from "./transaction.interface";
 
 export interface accounts {
-  transactions?: transaction[],
+  transactions?: transactionInterface[],
   totalSpent?: number,
   totalCredit?: number,
   savings?: number,
