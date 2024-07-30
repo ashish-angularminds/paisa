@@ -15,6 +15,8 @@ export enum transactionCategory {
   Medical,
   Other
 }
+
+
 export interface transactionInterface {
   id?: string,
   amount?: number,

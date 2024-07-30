@@ -9,7 +9,7 @@
         color="dark"
         class="ion-no-padding"
       >
-        <ion-icon size="large" name="add-outline"></ion-icon>
+        <ion-icon size="large" name="add-circle"></ion-icon>
       </ion-button>
     </ion-title>
   </ion-toolbar>
@@ -27,21 +27,20 @@
       </ion-buttons>
       <ion-buttons slot="end">
         <ion-button (click)="setOpen(true)" shape="round" color="dark">
-          <ion-icon size="large" name="add-outline"></ion-icon>
+          <ion-icon size="large" name="add-circle"></ion-icon>
         </ion-button>
-        <ion-action-sheet
-          trigger="open-action-sheet"
-          header="Are you sure?"
-          [buttons]=""
-        ></ion-action-sheet>
-        <ion-button id="open-action-sheet" shape="round" color="dark">
+
+        <ion-button shape="round" color="dark" (click)="setprofileflag(true)">
           <ion-icon size="large" name="person-circle"></ion-icon>
+        </ion-button>
+        <ion-button shape="round" color="dark">
+          <ion-icon size="large" name="notifications-circle"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-  <div class="">
+  <div id="menu-content">
     <ion-grid class="ion-margin-top border">
       <ion-row
         class="ion-text-center ion-padding-top ion-justify-content-around ion-align-items-center"
@@ -49,7 +48,10 @@
         <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
             <h5 class="ion-no-margin title-text">Total Credit</h5>
-            <h5 class="ion-no-margin amount-text">{{account.totalCredit}}</h5>
+            <h5 class="ion-no-margin amount-text">
+              {{account.totalCredit}} /
+              {{account.totalCredit!-account.totalSpent!}}
+            </h5>
           </ion-text>
         </ion-col>
         <ion-col size="3.5" class="ion-padding sm-card">
@@ -60,27 +62,28 @@
         </ion-col>
         <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
-            <h5 class="ion-no-margin title-text">Quota</h5>
-            <h5 class="ion-no-margin amount-text">
-              {{calculateQuota(account.totalCredit!)}}
-            </h5>
+            <h5 class="ion-no-margin title-text">Food Quota</h5>
+            <h5 class="ion-no-margin amount-text">{{calculateQuota()}}</h5>
           </ion-text>
         </ion-col>
       </ion-row>
-
       <ion-row
         class="ion-text-center ion-padding-vertical ion-justify-content-around ion-align-items-center"
       >
         <ion-col size="5.5" class="ion-padding sm-card">
           <ion-text>
-            <h5 class="ion-no-margin title-text">Food</h5>
-            <h5 class="ion-no-margin amount-text">{{foodAmount}}</h5>
+            <h5 class="ion-no-margin title-text">🛍️</h5>
+            <h5 class="ion-no-margin amount-text">
+              {{shoppingSpentAmount}} / {{shoppingCreditAmount}}
+            </h5>
           </ion-text>
         </ion-col>
         <ion-col size="5.5" class="ion-padding sm-card">
           <ion-text>
-            <h5 class="ion-no-margin title-text">Shopping</h5>
-            <h5 class="ion-no-margin amount-text">{{shoppingAmount}}</h5>
+            <h5 class="ion-no-margin title-text">🍟</h5>
+            <h5 class="ion-no-margin amount-text">
+              {{foodSpentAmount}} / {{foodCreditAmount}}
+            </h5>
           </ion-text>
         </ion-col>
       </ion-row>
@@ -89,20 +92,26 @@
       >
         <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
-            <h5 class="ion-no-margin title-text">Medical</h5>
-            <h5 class="ion-no-margin amount-text">{{medicalAmount}}</h5>
+            <h5 class="ion-no-margin title-text">💊</h5>
+            <h5 class="ion-no-margin amount-text">
+              {{medicalSpentAmount}} / {{medicalCreditAmount}}
+            </h5>
           </ion-text>
         </ion-col>
         <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
-            <h5 class="ion-no-margin title-text">Travel</h5>
-            <h5 class="ion-no-margin amount-text">{{travelAmount}}</h5>
+            <h5 class="ion-no-margin title-text">🧳</h5>
+            <h5 class="ion-no-margin amount-text">
+              {{travelSpentAmount}} / {{travelCreditAmount}}
+            </h5>
           </ion-text>
         </ion-col>
         <ion-col size="3.5" class="ion-padding sm-card">
           <ion-text>
-            <h5 class="ion-no-margin title-text">Other</h5>
-            <h5 class="ion-no-margin amount-text">{{otherAmount}}</h5>
+            <h5 class="ion-no-margin title-text">🪤</h5>
+            <h5 class="ion-no-margin amount-text">
+              {{otherSpentAmount}} / {{otherCreditAmount}}
+            </h5>
           </ion-text>
         </ion-col>
       </ion-row>
@@ -261,6 +270,22 @@
             ></ion-datetime>
           </ion-item>
         </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="profileflag" mode="ios">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Modal</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setprofileflag(false)">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <app-user-menu></app-user-menu>
       </ion-content>
     </ng-template>
   </ion-modal>

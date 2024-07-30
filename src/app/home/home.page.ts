@@ -24,21 +24,25 @@ export class HomePage implements OnInit {
   user!: initalUserStateInterface;
   transactionId: string = '';
   isModalOpen = false;
+  profileflag = false;
   account!: accounts;
   newDate = new Date();
   newDateEpoch = Date.now() / 1000;
   transactionType = transactionType;
   transactionCategory = transactionCategory;
   transactionMode = transactionMode;
-  transaction: transactionInterface = {
-    amount: undefined,
-    category: undefined,
-    createdAt: undefined,
-    id: undefined,
-    mode: undefined,
-    type: undefined,
-    updatedAt: undefined,
-  };
+  transaction!: transactionInterface;
+  formCreatedAt!: any;
+  foodSpentAmount: number = 0;
+  shoppingSpentAmount: number = 0;
+  medicalSpentAmount: number = 0;
+  travelSpentAmount: number = 0;
+  otherSpentAmount: number = 0;
+  foodCreditAmount: number = 0;
+  shoppingCreditAmount: number = 0;
+  medicalCreditAmount: number = 0;
+  travelCreditAmount: number = 0;
+  otherCreditAmount: number = 0;
 
   constructor(private toastController: ToastController, private store: Store<{ user: initalUserStateInterface }>, private firestore: Firestore, private firestoreService: FirestoreService, private router: Router) { }
 
@@ -109,25 +113,35 @@ export class HomePage implements OnInit {
     await toast.present();
   }
 
-  formCreatedAt!: any;
+  setprofileflag(flag: boolean) {
+    this.profileflag = flag;
+  }
+
   setOpen(isOpen: boolean, trans?: transactionInterface) {
     if (trans) {
-      this.transaction = trans;
+      this.transaction = { ...trans };
       this.formCreatedAt = new Date(trans.createdAt?.seconds! * 1000).toISOString();
-      console.log(this.formCreatedAt.toString());
       this.isModalOpen = isOpen;
     } else {
+      this.transaction = {
+        amount: undefined,
+        category: undefined,
+        type: undefined,
+        mode: undefined,
+        id: undefined
+      }
+      this.formCreatedAt = new Date().toISOString();
       this.isModalOpen = isOpen;
     }
   }
 
-  calculateQuota(amount: number) {
-    let date = new Date("07/25/2024");
+  calculateQuota() {
+    let date = new Date();
     let totalDays = new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 0).getDate();
     let remainingDays = date.getDate();
-    let quota = Math.trunc(amount / (totalDays - remainingDays));
-    let totalquota = Math.trunc(amount / totalDays);
-    return quota + "/" + totalquota;
+    let quota = Math.trunc((this.foodCreditAmount - this.foodSpentAmount) / ((totalDays - remainingDays) + 1));
+    let totalquota = Math.trunc((this.foodCreditAmount - this.foodSpentAmount) / totalDays);
+    return quota + " / " + totalquota;
   }
 
   updateFirestoreDoc() {
@@ -152,67 +166,87 @@ export class HomePage implements OnInit {
     });
   }
 
-  foodAmount: number = 0;
-  shoppingAmount: number = 0;
-  medicalAmount: number = 0;
-  travelAmount: number = 0;
-  otherAmount: number = 0;
   initializeData() {
     this.updateFirestoreDoc();
     this.getFirestoreDoc();
     this.getAccount();
 
-    this.account.transactions?.map((data) => {
+    this.foodSpentAmount = 0;
+    this.shoppingSpentAmount = 0;
+    this.travelSpentAmount = 0;
+    this.medicalSpentAmount = 0;
+    this.otherSpentAmount = 0;
+
+    this.foodCreditAmount = 0;
+    this.shoppingCreditAmount = 0;
+    this.travelCreditAmount = 0;
+    this.medicalCreditAmount = 0;
+    this.otherCreditAmount = 0;
+
+    this.account.transactions?.forEach((data) => {
       if (data.type === transactionType.Debit) {
         switch (data.category) {
           case 0:
-            this.foodAmount = this.foodAmount + data.amount!;
+            this.foodSpentAmount = this.foodSpentAmount + data.amount!;
             break;
           case 1:
-            this.shoppingAmount = this.shoppingAmount + data.amount!;
+            this.shoppingSpentAmount = this.shoppingSpentAmount + data.amount!;
             break;
           case 2:
-            this.travelAmount = this.travelAmount + data.amount!;
+            this.travelSpentAmount = this.travelSpentAmount + data.amount!;
             break;
           case 3:
-            this.medicalAmount = this.medicalAmount + data.amount!;
+            this.medicalSpentAmount = this.medicalSpentAmount + data.amount!;
             break;
           case 4:
-            this.otherAmount = this.otherAmount + data.amount!;
+            this.otherSpentAmount = this.otherSpentAmount + data.amount!;
+            break;
+          default:
+            break;
+        }
+      } else if (data.type === transactionType.Credit) {
+        switch (data.category) {
+          case 0:
+            this.foodCreditAmount = this.foodCreditAmount + data.amount!;
+            break;
+          case 1:
+            this.shoppingCreditAmount = this.shoppingCreditAmount + data.amount!;
+            break;
+          case 2:
+            this.travelCreditAmount = this.travelCreditAmount + data.amount!;
+            break;
+          case 3:
+            this.medicalCreditAmount = this.medicalCreditAmount + data.amount!;
+            break;
+          case 4:
+            this.otherCreditAmount = this.otherCreditAmount + data.amount!;
             break;
           default:
             break;
         }
       }
-      return data;
     });
   }
 
   async addTransaction() {
     if (this.transaction.id) {
-      console.log("check");
-
       this.updateTransaction()
     } else {
-      this.transaction.createdAt = { seconds: Date.parse(this.formCreatedAt) / 1000 };
-      this.transaction.updatedAt = { seconds: this.newDateEpoch };
-      this.transaction.id = uuidv4();
-      console.log(this.transaction);
-
-      if (this.transaction!.amount! > 0 && this.transaction!.category !== undefined && this.transaction!.createdAt !== undefined && this.transaction!.updatedAt !== undefined && this.transaction!.id !== undefined && this.transaction!.mode !== undefined && this.transaction!.type !== undefined) {
-        await this.store.dispatch(userActions.addTransaction({
-          transaction:
-          {
-            amount: this.transaction.amount, type: this.transaction.type, id: this.transaction.id, mode: this.transaction.mode,
-            category: this.transaction.category, createdAt: this.transaction.createdAt, updatedAt: this.transaction.updatedAt
+      if (this.transaction.mode !== undefined && this.transaction.type !== undefined && this.transaction.category !== undefined && this.transaction.amount) {
+        let newTransactionReq = {
+          transaction: {
+            amount: this.transaction.amount, type: this.transaction.type, id: uuidv4(), mode: this.transaction.mode,
+            category: this.transaction.category, createdAt: { seconds: Date.parse(this.formCreatedAt) / 1000 },
+            updatedAt: { seconds: this.newDateEpoch }
           },
           month: new Date(this.formCreatedAt).getMonth() + 1, year: new Date(this.formCreatedAt).getFullYear()
-        }));
+        }
+        this.store.dispatch(userActions.addTransaction(newTransactionReq));
         this.store.select('user').subscribe(data => {
           this.firestoreService.updateDoc(this.user!.Uid!, data);
           localStorage.setItem('user', JSON.stringify(data));
+          this.initializeData();
         });
-        this.initializeData();
         this.setOpen(false);
       } else {
         this.presentToast('Transaction is not valid, check all fields')
@@ -236,7 +270,6 @@ export class HomePage implements OnInit {
       createdAt: { seconds: Date.parse(this.formCreatedAt) / 1000 },
       updatedAt: { seconds: this.newDateEpoch }
     };
-    console.log(updated);
     await this.store.dispatch(userActions.updateTransaction({ month: tmpDate.getMonth() + 1, newtransaction: updated, transactionId: this.transaction.id!, year: tmpDate.getFullYear() }));
     this.initializeData();
     this.setOpen(false);
