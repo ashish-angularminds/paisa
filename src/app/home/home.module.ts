@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 import { UserMenuComponent } from './user-menu/user-menu.component';
+import { SmsTransactionListComponent } from './sms-transaction-list/sms-transaction-list.component';
 
 @NgModule({
   imports: [
@@ -13,6 +14,6 @@ import { UserMenuComponent } from './user-menu/user-menu.component';
     IonicModule,
     HomePageRoutingModule
   ],
-  declarations: [HomePage, UserMenuComponent]
+  declarations: [HomePage, UserMenuComponent, SmsTransactionListComponent]
 })
 export class HomePageModule { }

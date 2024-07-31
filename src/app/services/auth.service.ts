@@ -31,8 +31,4 @@ export class AuthService {
   async getProfile() {
     return await this.ngFireAuth.currentUser;
   }
-
-  async getProfileWithId(id: string) {
-    return await this.ngFireAuth.signInWithCustomToken(id);
-  }
 }

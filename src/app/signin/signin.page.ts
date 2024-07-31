@@ -44,7 +44,7 @@ export class SigninPage implements OnInit {
       await this.authServices.loginUserWithEamil(this.signinForm.controls['email'].value, this.signinForm.controls['password'].value).then(
         async (data) => {
           let user: any = (await this.fireStoreService.getDoc(data.user!.uid)).data();
-          localStorage.setItem('token', data.user?.refreshToken!);
+          localStorage.setItem('profile', JSON.stringify(await data.user?.providerData[0]));
           this.store.dispatch(userActions.createUser({ userData: user }));
           this.store.select('user').subscribe((data) => {
             localStorage.setItem('user', JSON.stringify(data));

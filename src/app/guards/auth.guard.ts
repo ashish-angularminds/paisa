@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
   constructor(private store: Store<{ user: initalUserStateInterface }>, private router: Router) { }
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    let data = await firstValueFrom(this.store.select('user').pipe(pluck('Uid')));
+    let data = localStorage.getItem('user');
     if (data) {
       if (route?.url[0]?.path !== "home") {
         this.router.navigate(['home']);

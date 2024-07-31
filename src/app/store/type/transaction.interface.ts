@@ -23,6 +23,7 @@ export interface transactionInterface {
   type?: transactionType,
   mode?: transactionMode,
   category?: transactionCategory,
+  merchant?: string,
   createdAt?: { seconds: number },
   updatedAt?: { seconds: number },
 }

@@ -34,11 +34,12 @@ function updateTransaction(_account: accounts, transactionId: string, updatedtra
         }
       } else {
         if (trans.type === transactionType.Credit) {
+          // console.log('credit:  ts:', account.totalSpent, '  oa:', trans.amount, '  na:', updatedtransaction.amount);
           account.totalCredit = account.totalCredit! - trans.amount!;
-          account.totalSpent = account.totalSpent! + (updatedtransaction.amount!) ? (updatedtransaction.amount!) : trans.amount!;
+          account.totalSpent = account.totalSpent! + (updatedtransaction.amount! ? updatedtransaction.amount! : trans.amount!);
         } else {
           account.totalSpent = account.totalSpent! - trans.amount!;
-          account.totalCredit = account.totalCredit! + (updatedtransaction.amount!) ? (updatedtransaction.amount!) : trans.amount!;
+          account.totalCredit = account.totalCredit! + (updatedtransaction.amount! ? updatedtransaction.amount! : trans.amount!);
         }
       }
       return { ...trans, ...updatedtransaction }

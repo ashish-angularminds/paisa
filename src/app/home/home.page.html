@@ -3,7 +3,7 @@
     <ion-title style="font-family: 'Monoton', sans-serif">Paisa</ion-title>
     <ion-title class="ion-text-right" style="padding-inline: 0">
       <ion-button
-        (click)="setOpen(true)"
+        (click)="setAddTransactionModelFlag(true)"
         shape="round"
         fill="false"
         color="dark"
@@ -26,14 +26,26 @@
         >
       </ion-buttons>
       <ion-buttons slot="end">
-        <ion-button (click)="setOpen(true)" shape="round" color="dark">
+        <ion-button
+          (click)="setAddTransactionModelFlag(true)"
+          shape="round"
+          color="dark"
+        >
           <ion-icon size="large" name="add-circle"></ion-icon>
         </ion-button>
 
-        <ion-button shape="round" color="dark" (click)="setprofileflag(true)">
+        <ion-button
+          shape="round"
+          color="dark"
+          (click)="setProfileModelFlag(true)"
+        >
           <ion-icon size="large" name="person-circle"></ion-icon>
         </ion-button>
-        <ion-button shape="round" color="dark">
+        <ion-button
+          shape="round"
+          color="dark"
+          (click)="setSMSTransactionListModelFlag(true)"
+        >
           <ion-icon size="large" name="notifications-circle"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -124,7 +136,7 @@
             <ion-item-sliding
               *ngFor="let transactionLog of reverseList(account.transactions!)"
             >
-              <ion-item [button]="true">
+              <ion-item [button]="true" [id]="transactionLog.id">
                 <ion-icon
                   slot="start"
                   size="large"
@@ -168,11 +180,24 @@
                 </ion-label>
               </ion-item>
 
+              <ion-popover
+                [trigger]="transactionLog?.id"
+                triggerAction="click"
+                alignment="end"
+                *ngIf="transactionLog.merchant"
+              >
+                <ng-template>
+                  <ion-content class="ion-padding"
+                    >{{transactionLog?.merchant}}</ion-content
+                  >
+                </ng-template>
+              </ion-popover>
+
               <ion-item-options slot="end">
                 <ion-item-option
                   color="primary"
                   expandable="true"
-                  (click)="setOpen(true,transactionLog)"
+                  (click)="setAddTransactionModelFlag(true,transactionLog)"
                 >
                   <ion-icon slot="icon-only" name="create-outline"></ion-icon>
                 </ion-item-option>
@@ -191,12 +216,14 @@
     </ion-grid>
   </div>
 
-  <ion-modal [isOpen]="isModalOpen" mode="ios">
+  <ion-modal [isOpen]="addTransactionModelFlag" mode="ios">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-button (click)="setOpen(false)">Cancel</ion-button>
+            <ion-button (click)="setAddTransactionModelFlag(false)"
+              >Cancel</ion-button
+            >
           </ion-buttons>
           <ion-title>Add Entry</ion-title>
           <ion-buttons slot="end">
@@ -215,6 +242,17 @@
               type="number"
               label="Amount"
               [(ngModel)]="transaction.amount"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              mode="md"
+              placeholder="Enter Merchant Name"
+              type="string"
+              label="Merchant"
+              [(ngModel)]="transaction.merchant"
+              [disabled]="transactionType.Debit? transaction.type !== transactionType.Debit:true"
             ></ion-input>
           </ion-item>
 
@@ -274,18 +312,44 @@
     </ng-template>
   </ion-modal>
 
-  <ion-modal [isOpen]="profileflag" mode="ios">
+  <ion-modal [isOpen]="profileModelFlag" mode="ios">
+    <ng-template>
+      <ion-fab style="--background: transparent">
+        <ion-button
+          fill="clear"
+          color="light"
+          (click)="setProfileModelFlag(false)"
+        >
+          <ion-icon name="chevron-back-outline" size="large"> </ion-icon>
+        </ion-button>
+      </ion-fab>
+      <ion-content>
+        <app-user-menu
+          (setprofileflagfromchild)="setProfileModelFlag($event)"
+        ></app-user-menu>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="smsTransactionListModelFlag" mode="ios">
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Modal</ion-title>
+          <ion-buttons slot="start">
+            <ion-button (click)="setSMSTransactionListModelFlag(false)"
+              >Cancel</ion-button
+            >
+          </ion-buttons>
+          <ion-title>SMS Transactions</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="setprofileflag(false)">Close</ion-button>
+            <ion-button>
+              <ion-icon name="reload-circle-outline" size="large"></ion-icon>
+            </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content class="ion-padding">
-        <app-user-menu></app-user-menu>
+      <ion-content>
+        <app-sms-transaction-list></app-sms-transaction-list>
       </ion-content>
     </ng-template>
   </ion-modal>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { addDoc, collection, Firestore, updateDoc, doc } from '@angular/fire/firestore';
 import { FirestoreService } from '../services/firestore.service';
@@ -23,8 +23,9 @@ export class HomePage implements OnInit {
   @ViewChild(IonModal) modal: IonModal | any;
   user!: initalUserStateInterface;
   transactionId: string = '';
-  isModalOpen = false;
-  profileflag = false;
+  addTransactionModelFlag = false;
+  profileModelFlag = false;
+  smsTransactionListModelFlag: boolean = false;
   account!: accounts;
   newDate = new Date();
   newDateEpoch = Date.now() / 1000;
@@ -113,25 +114,30 @@ export class HomePage implements OnInit {
     await toast.present();
   }
 
-  setprofileflag(flag: boolean) {
-    this.profileflag = flag;
+  setSMSTransactionListModelFlag(flag: boolean) {
+    this.smsTransactionListModelFlag = flag;
   }
 
-  setOpen(isOpen: boolean, trans?: transactionInterface) {
+  setProfileModelFlag(flag: boolean) {
+    this.profileModelFlag = flag;
+  }
+
+  setAddTransactionModelFlag(flag: boolean, trans?: transactionInterface) {
     if (trans) {
       this.transaction = { ...trans };
       this.formCreatedAt = new Date(trans.createdAt?.seconds! * 1000).toISOString();
-      this.isModalOpen = isOpen;
+      this.addTransactionModelFlag = flag;
     } else {
       this.transaction = {
         amount: undefined,
         category: undefined,
         type: undefined,
         mode: undefined,
+        merchant: undefined,
         id: undefined
       }
       this.formCreatedAt = new Date().toISOString();
-      this.isModalOpen = isOpen;
+      this.addTransactionModelFlag = flag;
     }
   }
 
@@ -236,8 +242,8 @@ export class HomePage implements OnInit {
         let newTransactionReq = {
           transaction: {
             amount: this.transaction.amount, type: this.transaction.type, id: uuidv4(), mode: this.transaction.mode,
-            category: this.transaction.category, createdAt: { seconds: Date.parse(this.formCreatedAt) / 1000 },
-            updatedAt: { seconds: this.newDateEpoch }
+            category: this.transaction.category, merchant: this.transaction.merchant,
+            createdAt: { seconds: Date.parse(this.formCreatedAt) / 1000 }, updatedAt: { seconds: this.newDateEpoch }
           },
           month: new Date(this.formCreatedAt).getMonth() + 1, year: new Date(this.formCreatedAt).getFullYear()
         }
@@ -247,7 +253,7 @@ export class HomePage implements OnInit {
           localStorage.setItem('user', JSON.stringify(data));
           this.initializeData();
         });
-        this.setOpen(false);
+        this.setAddTransactionModelFlag(false);
       } else {
         this.presentToast('Transaction is not valid, check all fields')
       }
@@ -272,6 +278,6 @@ export class HomePage implements OnInit {
     };
     await this.store.dispatch(userActions.updateTransaction({ month: tmpDate.getMonth() + 1, newtransaction: updated, transactionId: this.transaction.id!, year: tmpDate.getFullYear() }));
     this.initializeData();
-    this.setOpen(false);
+    this.setAddTransactionModelFlag(false);
   }
 }
