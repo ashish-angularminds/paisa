@@ -9,7 +9,9 @@ let lS: initalUserStateInterface = JSON.parse(localStorage.getItem('user') || "{
 const initaluserstate: initalUserStateInterface = {
   accounts: lS.accounts || [],
   lastSMSUpdate: lS.lastSMSUpdate || undefined,
-  Uid: lS.Uid || undefined
+  Uid: lS.Uid || undefined,
+  creditSMSFlag: lS.creditSMSFlag || false,
+  debitSMSFlag: lS.debitSMSFlag || false
 }
 
 function addTransaction(_account: accounts, transaction: transactionInterface): accounts {
@@ -92,12 +94,12 @@ const userFeature = createFeature({
     on(userActions.deleteUser, (state) => ({
       ...state,
       accounts: [],
-      lastSMSUpdate: undefined,
+      lastSMSUpdate: { seconds: (Date.parse((new Date().setUTCDate(1)).toString()) / 1000) },
       Uid: undefined,
     })),
-    on(userActions.updateUserLastSMSDate, (state, action) => ({
+    on(userActions.updateUser, (state, action) => ({
       ...state,
-      lastSMSUpdate: action.date,
+      ...action.user
     })),
     on(userActions.createAccount, (state, action) => ({
       ...state,
@@ -105,7 +107,7 @@ const userFeature = createFeature({
     })),
     on(userActions.updateAccount, (state, action) => ({
       ...state,
-      ...action.account,
+      accounts: action.accounts,
     })),
     on(userActions.deleteAccount, (state, action) => ({
       ...state,

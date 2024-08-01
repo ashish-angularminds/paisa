@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ToggleChangeEventDetail, ToggleCustomEvent } from '@ionic/angular';
+import { Store } from '@ngrx/store';
 import { SMSInboxReader, SMSFilter, SMSObject } from 'capacitor-sms-inbox/dist/esm'
+import { userActions } from 'src/app/store/action';
+import { initalUserStateInterface } from 'src/app/store/type/InitialUserState.interface';
 
 @Component({
   selector: 'app-sms-transaction-list',
@@ -8,20 +12,37 @@ import { SMSInboxReader, SMSFilter, SMSObject } from 'capacitor-sms-inbox/dist/e
 })
 export class SmsTransactionListComponent implements OnInit {
 
+  constructor(private store: Store<{ user: initalUserStateInterface }>) { }
+
+  permissionFlag: boolean = true;
   public smsList: any = [];
   public spentSmsList: any = [];
   public creditSmsList: any = [];
-  sampleDate = new Date("07/01/2024").valueOf();
-  filter: SMSFilter = { minDate: this.sampleDate };
+  filter?: SMSFilter;
 
   async ngOnInit(): Promise<void> {
+    this.store.select('user').subscribe((data) => {
+      this.filter = { minDate: new Date(data.lastSMSUpdate.seconds).valueOf() }
+    })
     SMSInboxReader.checkPermissions().then(async (data: any) => {
       if (data.sms !== "granted") {
-        SMSInboxReader.requestPermissions().then(() => { this.loadData() });
+        this.requestPermission();
       } else {
+        this.permissionFlag = true;
         this.loadData();
       }
     })
+  }
+
+  requestPermission() {
+    SMSInboxReader.requestPermissions().then(() => {
+      SMSInboxReader.checkPermissions().then(async (data: any) => {
+        if (data.sms === "granted") {
+          this.loadData();
+          this.permissionFlag = true;
+        }
+      })
+    });
   }
 
   loadData() {
@@ -33,5 +54,14 @@ export class SmsTransactionListComponent implements OnInit {
       this.creditSmsList = this.smsList.filter((element: SMSObject) => creditRegex.test(element.body));
     });
   }
+
+  toggleStateChange(event: ToggleCustomEvent) {
+    if (event.detail.value === "credit") {
+      this.store.dispatch(userActions.updateUser({ user: { creditSMSFlag: event.detail.checked } }));
+    } else {
+      this.store.dispatch(userActions.updateUser({ user: { debitSMSFlag: event.detail.checked } }));
+    }
+  }
+
 
 }

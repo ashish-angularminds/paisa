@@ -1,3 +1,36 @@
-<p>
-  sms-transaction-list works!
-</p>
+<ion-content class="ion-padding ion-text-center" *ngIf="!permissionFlag">
+  <ion-title class="ion-padding-top ion-margin-top">
+    This Feature requires <br />
+    SMS Access
+    <br />
+    <ion-button class="ion-padding" (click)="requestPermission()">
+      Request Permission
+    </ion-button>
+  </ion-title>
+</ion-content>
+
+<ion-content *ngIf="permissionFlag">
+  <ion-list mode="ios" inset="true">
+    <ion-list-header lines="full" class="ion-padding-bottom">
+      <ion-label>Transactions</ion-label>
+      <ion-toggle
+        value="credit"
+        (ionChange)="toggleStateChange($event)"
+        [enableOnOffLabels]="true"
+        color="success"
+        style="margin-bottom: 8px"
+      ></ion-toggle>
+      <ion-toggle
+        value="debit"
+        (ionChange)="toggleStateChange($event)"
+        class="ion-margin-horizontal"
+        [enableOnOffLabels]="true"
+        color="danger"
+        style="margin-bottom: 8px"
+      ></ion-toggle>
+    </ion-list-header>
+    <ion-item button="true">
+      <ion-label>Pokémon Yellow</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

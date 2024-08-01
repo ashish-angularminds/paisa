@@ -45,7 +45,7 @@ export class SignupPage implements OnInit {
       await this.authServices.registerUser(this.signupForm.controls['email'].value, this.signupForm.controls['password'].value).then(
         async (data) => {
           data.user?.updateProfile({ displayName: this.signupForm.controls['fullname'].value });
-          this.store.dispatch(userActions.createUser({ userData: { accounts: [], lastSMSUpdate: new Date(), Uid: data.user!.uid } }));
+          this.store.dispatch(userActions.createUser({ userData: { accounts: [], lastSMSUpdate: { seconds: Date.now() / 1000 }, Uid: data.user!.uid, creditSMSFlag: false, debitSMSFlag: false } }));
           this.store.dispatch(userActions.createAccount({
             account:
               { month: (new Date().getMonth()) + 1, year: new Date().getFullYear(), savings: 0, totalCredit: 0, totalSpent: 0, transactions: [] }
@@ -54,7 +54,7 @@ export class SignupPage implements OnInit {
           this.store.select('user').subscribe((data) => userData = data);
           this.firestoreService.addDoc(userData, data.user!.uid);
           this.store.select('user').subscribe((data) => {
-            localStorage.setItem('userState', JSON.stringify(data));
+            localStorage.setItem('user', JSON.stringify(data));
           });
           (await loader).dismiss();
           this.presentToast('Registration successful');

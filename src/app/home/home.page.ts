@@ -47,7 +47,22 @@ export class HomePage implements OnInit {
 
   constructor(private toastController: ToastController, private store: Store<{ user: initalUserStateInterface }>, private firestore: Firestore, private firestoreService: FirestoreService, private router: Router) { }
 
-  async ngOnInit() {
+  ngOnInit() {
+    this.getAccount();
+    if (!this.account) {
+      let oldMonth = this.newDate.getMonth() === 0 ? 12 : this.newDate.getMonth();
+      let oldYear = oldMonth === 12 ? this.newDate.getFullYear() - 1 : this.newDate.getFullYear();
+      let updatedAccounts = this.user.accounts.map((acc) => {
+        if (acc.month === oldMonth && acc.year === oldYear) {
+          return { ...acc, savings: acc.totalCredit! - acc.totalSpent! }
+        } else {
+          return acc;
+        }
+      });
+      this.store.dispatch(userActions.updateAccount({ accounts: updatedAccounts }));
+      this.store.dispatch(userActions.createAccount({ account: { month: this.newDate.getMonth() + 1, year: this.newDate.getFullYear(), savings: 0, totalCredit: 0, totalSpent: 0, transactions: [] } }));
+      this.updateFirestoreDoc();
+    }
     this.initializeData();
   }
 

@@ -20,6 +20,7 @@ export enum transactionCategory {
 export interface transactionInterface {
   id?: string,
   amount?: number,
+  account?: string,
   type?: transactionType,
   mode?: transactionMode,
   category?: transactionCategory,
