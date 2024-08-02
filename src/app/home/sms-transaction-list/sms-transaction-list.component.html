@@ -29,8 +29,52 @@
         style="margin-bottom: 8px"
       ></ion-toggle>
     </ion-list-header>
-    <ion-item button="true">
-      <ion-label>Pokémon Yellow</ion-label>
+
+    <ion-item
+      [button]="true"
+      *ngFor="let transactionLog of transactionQueue"
+      [id]="transactionLog.id"
+    >
+      <ion-icon
+        slot="start"
+        size="large"
+        [name]="transactionLog?.type === 0 ? 'add-circle' : 'remove-circle'"
+        [color]="transactionLog?.type === 0 ? 'success' : 'danger'"
+      ></ion-icon>
+      <ion-label [color]="transactionLog?.type === 0 ? 'success' : 'danger'">
+        <h2>{{ transactionLog?.amount }}</h2>
+        <!-- <small>{{dateConverter(transactionLog?.createdAt)}}</small> -->
+      </ion-label>
+
+      <ion-label slot="end" style="display: contents">
+        <ion-label
+          slot="start"
+          style="
+            overflow: hidden;
+            text-overflow: ellipsis !important;
+            white-space: nowrap;
+            max-width: 35%;
+            text-align: end;
+          "
+        >
+          <h2>
+            <!-- {{getTransactionCategory(transactionLog?.category)}} -->
+          </h2>
+          <!-- <small
+            >{{getTransactionType(transactionLog?.type)}} / {{
+            getTransactionMode(transactionLog?.mode)}}</small
+          > -->
+        </ion-label>
+
+        <ion-label
+          style="max-width: 25%"
+          slot="end"
+          class="ion-text-right"
+          [color]="transactionLog?.type === 1 ? 'success' : 'danger'"
+        >
+        </ion-label>
+      </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>
+<p>smsList:{{ smsList | json }}</p>

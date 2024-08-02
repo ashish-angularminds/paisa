@@ -149,6 +149,7 @@ export class HomePage implements OnInit {
         type: undefined,
         mode: undefined,
         merchant: undefined,
+        account: undefined,
         id: undefined
       }
       this.formCreatedAt = new Date().toISOString();

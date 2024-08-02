@@ -6,7 +6,8 @@ export enum transactionType {
 export enum transactionMode {
   Cash,
   UPI,
-  Card
+  Credit_Card,
+  Debit_Card
 }
 export enum transactionCategory {
   Food,

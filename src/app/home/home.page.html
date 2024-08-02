@@ -248,6 +248,16 @@
           <ion-item>
             <ion-input
               mode="md"
+              placeholder="Enter Account Name"
+              type="string"
+              label="Account"
+              [(ngModel)]="transaction.account"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              mode="md"
               placeholder="Enter Merchant Name"
               type="string"
               label="Merchant"
@@ -270,8 +280,11 @@
           <ion-item>
             <ion-select [(ngModel)]="transaction.mode">
               <div slot="label">Transcation Mode</div>
-              <ion-select-option [value]="transactionMode.Card"
-                >Card</ion-select-option
+              <ion-select-option [value]="transactionMode.Credit_Card"
+                >Credit Card</ion-select-option
+              >
+              <ion-select-option [value]="transactionMode.Debit_Card"
+                >Debit Card</ion-select-option
               >
               <ion-select-option [value]="transactionMode.Cash"
                 >Cash</ion-select-option

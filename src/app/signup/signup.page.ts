@@ -39,13 +39,15 @@ export class SignupPage implements OnInit {
   }
 
   async signup() {
+    let tmpDate = new Date();
     let loader = this.loadingCrtl.create();
     (await loader).present();
     if (this.signupForm.valid) {
       await this.authServices.registerUser(this.signupForm.controls['email'].value, this.signupForm.controls['password'].value).then(
         async (data) => {
+          localStorage.setItem('profile', JSON.stringify(await data.user?.providerData[0]));
           data.user?.updateProfile({ displayName: this.signupForm.controls['fullname'].value });
-          this.store.dispatch(userActions.createUser({ userData: { accounts: [], lastSMSUpdate: { seconds: Date.now() / 1000 }, Uid: data.user!.uid, creditSMSFlag: false, debitSMSFlag: false } }));
+          this.store.dispatch(userActions.createUser({ userData: { accounts: [], lastSMSUpdate: { seconds: Date.parse(new Date(`${tmpDate.getMonth() + 1}/1/${tmpDate.getFullYear()}`).toISOString()) }, Uid: data.user!.uid, creditSMSFlag: false, debitSMSFlag: false } }));
           this.store.dispatch(userActions.createAccount({
             account:
               { month: (new Date().getMonth()) + 1, year: new Date().getFullYear(), savings: 0, totalCredit: 0, totalSpent: 0, transactions: [] }
